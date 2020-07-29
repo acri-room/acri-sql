@@ -1,4 +1,4 @@
-drop procedure if exists createaccounts;
+drop procedure if exists create_accounts;
 drop procedure if exists open_dayall;
 drop procedure if exists routine_open;
 drop procedure if exists check_maintenance;
@@ -30,6 +30,7 @@ begin
 	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "15:00:00", user_id FROM vserves;
 	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "18:00:00", user_id FROM vserves;
 	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "21:00:00", user_id FROM vserves;
+	drop temporary table vserves;
 end;
 //
 
@@ -48,7 +49,7 @@ end;
 //
 
 create procedure check_maintenance()
-begin)
+begin
 	delete tt from wp_olb_timetable as tt, wp_olb_scheduled_maintenance as sm where tt.date = sm.date and tt.time = sm.time and tt.room_id = sm.room_id;
 end;
 //
@@ -56,11 +57,12 @@ end;
 create procedure add_maintenance(in exdate date, in extime time, in name text)
 begin
 	if name = 'all' then create temporary table vserves as select user_id as id from wp_usermeta where meta_key = 'olbgroup' and meta_value = 'teacher';
-	else create temporary table vserves as select id from wp_users where user_login regexp concat('^(', name, ')[0-9]{2}$');
+	else create temporary table vserves as select id from wp_users where user_login regexp concat('^', name, '[0-9]{2,3}$');
 	end if;
 
 	insert into wp_olb_scheduled_maintenance (date, time, room_id) select exdate, extime, id from vserves;
 	call check_maintenance();
+	drop temporary table vserves;
 end;
 //
 delimiter ;
