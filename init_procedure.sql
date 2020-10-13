@@ -1,5 +1,6 @@
 drop procedure if exists create_accounts;
 drop procedure if exists open_dayall;
+drop procedure if exists close_dayall;
 drop procedure if exists routine_open;
 drop procedure if exists check_maintenance;
 drop procedure if exists add_maintenance;
@@ -19,18 +20,22 @@ begin
 end;
 //
 
-create procedure open_dayall(in open_date date)
+create procedure open_dayall(in open_date date, in term int)
 begin
 	CREATE TEMPORARY TABLE vserves as SELECT user_id FROM wp_usermeta WHERE meta_key = 'olbgroup' and meta_value="teacher";
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "00:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "03:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "06:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "09:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "12:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "15:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "18:00:00", user_id FROM vserves;
-	INSERT INTO wp_olb_timetable (date, time, room_id) SELECT open_date, "21:00:00", user_id FROM vserves;
+	set @time = maketime(0, 0, 0);
+	set @period = maketime(24, 0, 0);
+	while @time < @period do
+		insert into wp_olb_timetable (date, time, room_id) select open_date, @time, user_id from vserves;
+		set @time = addtime(@time, maketime(term, 0, 0));
+	end while;
 	drop temporary table vserves;
+end;
+//
+
+create procedure close_dayall(in close_date date)
+begin
+	delete wp_olb_timetable from wp_olb_timetable where date = close_date;
 end;
 //
 
@@ -41,7 +46,7 @@ begin
 	set @close_date = date_add(@today, interval 2 month);
 
 	while @open_date < @close_date do
-		call open_dayall(@open_date);
+		call open_dayall(@open_date, 3);
 		set @open_date = date_add(@open_date, interval 1 day);
 	end while;
 	call check_maintenance();
