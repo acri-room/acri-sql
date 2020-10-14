@@ -1,21 +1,29 @@
-drop procedure if exists create_accounts;
+drop procedure if exists create_server;
+drop procedure if exists create_serverseries;
 drop procedure if exists open_dayall;
 drop procedure if exists close_dayall;
 drop procedure if exists routine_open;
 drop procedure if exists check_maintenance;
 drop procedure if exists add_maintenance;
 delimiter //
-create procedure create_accounts(in prefix text, in vms int)
+create procedure create_server(in name text)
+begin
+	set @email = concat(name, '@acri.c.titech.ac.jp');
+	set @url = concat("https://gw.acri.c.titech.ac.jp/wp/vm/", name);
+	insert into wp_users (user_login, user_pass, user_nicename, user_email, user_registered, user_url, display_name) values (name, password(concat(left(replace(uuid(), '-', ''), 8))), name, @email, sysdate(), @url, name);
+	insert into wp_usermeta (user_id, meta_key, meta_value) select wp_users.ID, 'wp_capabilities', 'a:1:{s:6:"author";b:1;}' from wp_users where wp_users.user_login = name;
+	insert into wp_usermeta (user_id, meta_key, meta_value) select wp_users.ID, 'olbgroup', 'teacher' from wp_users where wp_users.user_login = name;
+	insert into wp_usermeta (user_id, meta_key, meta_value) select wp_users.ID, 'active', '1' from wp_users where wp_users.user_login = name;
+end;
+//
+
+create procedure create_serverseries(in prefix text, in vms int)
 begin
 	set @num = 0;
 	while @num < vms do
 		set @num = @num + 1;
 		set @name = concat(prefix, lpad(@num, 2, '0'));
-		set @email = concat(@name, '@acri.c.titech.ac.jp');
-		set @url = concat("https://gw.acri.c.titech.ac.jp/wp/vm/", @name);
-		insert into wp_users (user_login, user_pass, user_nicename, user_email, user_url, display_name) values (@name, password(concat(left(replace(uuid(), '-', ''), 8))), @name, @email, @url, @name);
-		insert into wp_usermeta (user_id, meta_key, meta_value) select wp_users.ID, 'wp_capabilities', 'a:1:{s:6:"author";b:1;}' from wp_users where wp_users.user_login = @name;
-		insert into wp_usermeta (user_id, meta_key, meta_value) select wp_users.ID, 'olbgroup', 'teacher' from wp_users where wp_users.user_login = @name;
+		call create_server(@name);
 	end while;
 end;
 //
