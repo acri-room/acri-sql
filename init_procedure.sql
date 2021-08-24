@@ -34,7 +34,7 @@ begin
 	set @time = maketime(0, 0, 0);
 	set @period = maketime(24, 0, 0);
 	while @time < @period do
-		insert into wp_olb_timetable (date, time, room_id) select open_date, @time, user_id from vserves;
+		insert ignore into wp_olb_timetable (date, time, room_id) select open_date, @time, user_id from vserves;
 		set @time = addtime(@time, maketime(term, 0, 0));
 	end while;
 	drop temporary table vserves;
@@ -49,7 +49,7 @@ end;
 
 create procedure routine_open()
 begin
-	set @today = current_date();
+	set @today = date_format(current_date(), '%Y-%m-01');
 	set @open_date = date_add(@today, interval 1 month);
 	set @close_date = date_add(@today, interval 2 month);
 
