@@ -1,2 +1,7 @@
 #!/bin/bash
-mysql -uwordpress -p -A wordpress -e "set @prefix='$1', @vms=$2; call create_accounts(@prefix, @vms);"
+# create_accounts.sh 2020-07-29 Katsunoshin MATSUI
+# an example for create servers' accounts
+#   arguments: prefix (such as 'vs0'), number of machines
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+$( cat ${SCRIPT_DIR}/call_mysql.txt ) -A -e "set @prefix='$1', @vms=$2; call create_serverseries(@prefix, @vms);"

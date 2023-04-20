@@ -1,0 +1,1 @@
+mysql -uwordpress -pYOUR_DB_PASSWORD wordpress
