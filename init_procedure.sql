@@ -2,6 +2,7 @@ drop procedure if exists create_server;
 drop procedure if exists create_serverseries;
 drop procedure if exists open_dayall;
 drop procedure if exists close_dayall;
+drop procedure if exists open_rangeall;
 drop procedure if exists routine_open;
 drop procedure if exists check_maintenance;
 drop procedure if exists add_maintenance;
@@ -28,13 +29,17 @@ begin
 end;
 //
 
-create procedure open_dayall(in open_date date, in term int)
+create procedure open_dayall(in open_date date, in term int, in pattern text)
 begin
-	CREATE TEMPORARY TABLE vserves as SELECT user_id FROM wp_usermeta WHERE meta_key = 'olbgroup' and meta_value="teacher";
+	create temporary table vserves as
+		select wp_users.id from wp_usermeta
+		inner join wp_users on wp_usermeta.user_id = wp_users.id
+		where wp_usermeta.meta_key='olbgroup' and wp_usermeta.meta_value='teacher'
+		and wp_users.user_login like pattern collate utf8mb4_general_ci;
 	set @time = maketime(0, 0, 0);
 	set @period = maketime(24, 0, 0);
 	while @time < @period do
-		insert ignore into wp_olb_timetable (date, time, room_id) select open_date, @time, user_id from vserves;
+		insert ignore into wp_olb_timetable (date, time, room_id) select open_date, @time, id from vserves;
 		set @time = addtime(@time, maketime(term, 0, 0));
 	end while;
 	drop temporary table vserves;
@@ -44,6 +49,16 @@ end;
 create procedure close_dayall(in close_date date)
 begin
 	delete wp_olb_timetable from wp_olb_timetable where date = close_date;
+end;
+//
+
+create procedure open_rangeall(in open_date date, in close_date date, in pattern text)
+begin
+	set @current_date = open_date;
+	while @current_date < close_date do
+		call open_dayall(@current_date, 3, pattern);
+		set @current_date = date_add(@current_date, interval 1 day);
+	end while;
 end;
 //
 
@@ -57,10 +72,7 @@ begin
 	set @maintenance_day = date_add(@maintenance_day, interval 21 day);
 	set @maintenance_time = '12:00:00';
 
-	while @open_date < @close_date do
-		call open_dayall(@open_date, 3);
-		set @open_date = date_add(@open_date, interval 1 day);
-	end while;
+	call open_rangeall(@open_date, @close_date, '%');
 	delete wp_olb_timetable from wp_olb_timetable where date = @maintenance_day and time = @maintenance_time;
 end;
 //

@@ -30,11 +30,18 @@ and replace YOUR_DB_PASSWORD in call_mysql.txt with the password of your Wordpre
 	- create server accounts
 	- name of account is like prefix + 2-digits number
 
-- open_dayall(date)
+- open_dayall(date, term, pattern)
 	- open the date of reservation all-day.
+  - term must be the duration of a time slot in hour.
+  - only the servers matched by pattern are opened. % is a wild-card.
 
 - close_dayall(date)
   - close the date of reservation all-day.
+
+- open_rangeall(open_date, close_date, pattern)
+  - open the all slots of reservation within a range of days
+  - the range is from open_date to **a day before** close_date.
+  - only the servers matched by pattern are opened. % is a wild-card.
 
 - routine_open()
 	- for cron procedure
