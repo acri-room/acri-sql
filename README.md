@@ -35,11 +35,17 @@ and replace YOUR_DB_PASSWORD in call_mysql.txt with the password of your Wordpre
   - term must be the duration of a time slot in hour.
   - only the servers matched by pattern are opened. % is a wild-card.
 
-- close_dayall(date)
+- close_dayall(date, pattern)
   - close the date of reservation all-day.
+  - only the servers matched by pattern are opened. % is a wild-card.
 
 - open_rangeall(open_date, close_date, pattern)
   - open the all slots of reservation within a range of days
+  - the range is from open_date to **a day before** close_date.
+  - only the servers matched by pattern are opened. % is a wild-card.
+
+- close_rangeall(open_date, close_date, pattern)
+  - close the all slots of reservation within a range of days
   - the range is from open_date to **a day before** close_date.
   - only the servers matched by pattern are opened. % is a wild-card.
 

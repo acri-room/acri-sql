@@ -3,6 +3,7 @@ drop procedure if exists create_serverseries;
 drop procedure if exists open_dayall;
 drop procedure if exists close_dayall;
 drop procedure if exists open_rangeall;
+drop procedure if exists close_rangeall;
 drop procedure if exists routine_open;
 drop procedure if exists check_maintenance;
 drop procedure if exists add_maintenance;
@@ -46,9 +47,17 @@ begin
 end;
 //
 
-create procedure close_dayall(in close_date date)
+create procedure close_dayall(in close_date date, in pattern text)
 begin
-	delete wp_olb_timetable from wp_olb_timetable where date = close_date;
+	create temporary table vserves as
+		select wp_users.id from wp_usermeta
+		inner join wp_users on wp_usermeta.user_id = wp_users.id
+		where wp_usermeta.meta_key='olbgroup' and wp_usermeta.meta_value='teacher'
+		and wp_users.user_login like pattern collate utf8mb4_general_ci;
+	delete tt from wp_olb_timetable as tt
+		inner join vserves on tt.room_id = vserves.id
+		where date = close_date;
+	drop temporary table vserves;
 end;
 //
 
@@ -57,6 +66,16 @@ begin
 	set @current_date = open_date;
 	while @current_date < close_date do
 		call open_dayall(@current_date, 3, pattern);
+		set @current_date = date_add(@current_date, interval 1 day);
+	end while;
+end;
+//
+
+create procedure close_rangeall(in open_date date, in close_date date, in pattern text)
+begin
+	set @current_date = open_date;
+	while @current_date < close_date do
+		call close_dayall(@current_date, pattern);
 		set @current_date = date_add(@current_date, interval 1 day);
 	end while;
 end;
