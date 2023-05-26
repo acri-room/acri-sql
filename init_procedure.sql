@@ -81,17 +81,22 @@ begin
 end;
 //
 
-create procedure routine_open()
+create procedure routine_open(in maintenance text)
 begin
 	set @today = date_format(current_date(), '%Y-%m-01');
 	set @open_date = date_add(@today, interval 1 month);
 	set @close_date = date_add(@today, interval 2 month);
-	set @maintenance_day = date_sub(@open_date, interval 1 day);
-	set @maintenance_day = date_sub(@maintenance_day, interval weekday(@maintenance_day) day);
-	set @maintenance_day = date_add(@maintenance_day, interval 21 day);
-	set @maintenance_time = '12:00:00';
+  if maintenance = '' then
+  	set @maintenance_day = date_sub(@open_date, interval 1 day);
+  	set @maintenance_day = date_sub(@maintenance_day, interval weekday(@maintenance_day) day);
+  	set @maintenance_day = date_add(@maintenance_day, interval 21 day);
+  else
+    set @maintenance_day = DATE(maintenance);
+  end if;
 
-	call open_rangeall(@open_date, @close_date, '%');
+  set @maintenance_time = '12:00:00';
+
+  call open_rangeall(@open_date, @close_date, '%');
 	delete wp_olb_timetable from wp_olb_timetable where date = @maintenance_day and time = @maintenance_time;
 end;
 //
