@@ -27,16 +27,18 @@ and replace YOUR_DB_PASSWORD in call_mysql.txt with the password of your Wordpre
   - create a server account on WordPress
 
 - create_serverseries(prefix, num)
-	- create server accounts
-	- name of account is like prefix + 2-digits number
+  - create server accounts
+  - name of account is like prefix + 2-digits number
 
-- open_dayall(date, term, pattern)
-	- open the date of reservation all-day.
+- open_dayterm(date, start_hour, end_hour, term, pattern)
+  - open some terms of reservation in a day.
+  - the range is from start_hour to **an hour before** end_hour.
   - term must be the duration of a time slot in hour.
   - only the servers matched by pattern are opened. % is a wild-card.
 
-- close_dayall(date, pattern)
-  - close the date of reservation all-day.
+- open_dayall(date, term, pattern)
+  - open the date of reservation all-day.
+  - term must be the duration of a time slot in hour.
   - only the servers matched by pattern are opened. % is a wild-card.
 
 - open_rangeall(open_date, close_date, pattern)
@@ -44,28 +46,37 @@ and replace YOUR_DB_PASSWORD in call_mysql.txt with the password of your Wordpre
   - the range is from open_date to **a day before** close_date.
   - only the servers matched by pattern are opened. % is a wild-card.
 
+- close_dayterm(date, start_hour, end_hour, term, pattern)
+  - close some terms of reservation in a day.
+  - the range is from start_hour to **an hour before** end_hour.
+  - only the servers matched by pattern are closed. % is a wild-card.
+
+- close_dayall(date, pattern)
+  - close the date of reservation all-day.
+  - only the servers matched by pattern are closed. % is a wild-card.
+
 - close_rangeall(open_date, close_date, pattern)
   - close the all slots of reservation within a range of days
   - the range is from open_date to **a day before** close_date.
-  - only the servers matched by pattern are opened. % is a wild-card.
+  - only the servers matched by pattern are closed. % is a wild-card.
 
 - routine_open()
-	- for cron procedure
-	- open from next month to the month after the next.
+  - for cron procedure
+  - open from next month to the month after the next.
   - regular maintainance period (12:00- on 3rd Monday) is excluded.
-	- WARNING: this procedure cannot open this month. If want, please wrap open\_dayall();
+    - WARNING: this procedure cannot open this month. If want, please wrap open\_dayall();
 
 - check_maintenance() 
   - DEPRECATED
-	- check maintenance info and if duplicated delete from timetable
+  - check maintenance info and if duplicated delete from timetable
 
 - add_maintenance(date, time, server)
   - DEPRECATED
-	- add maintenance info
-	- paremeter server can be taken only under string
-		- all
-		- machine's name
-		- server prefix(vs0, vs1, vs2, vs3, vs4, vs5, vs6, as0, ag0, vs, as, ag)
+  - add maintenance info
+  - paremeter server can be taken only under string
+    - all
+    - machine's name
+    - server prefix(vs0, vs1, vs2, vs3, vs4, vs5, vs6, as0, ag0, vs, as, ag)
 
 ## Contributors
 

@@ -1,7 +1,9 @@
 drop procedure if exists create_server;
 drop procedure if exists create_serverseries;
 drop procedure if exists open_dayall;
+drop procedure if exists open_dayterm;
 drop procedure if exists close_dayall;
+drop procedure if exists close_dayterm;
 drop procedure if exists open_rangeall;
 drop procedure if exists close_rangeall;
 drop procedure if exists routine_open;
@@ -30,15 +32,15 @@ begin
 end;
 //
 
-create procedure open_dayall(in open_date date, in term int, in pattern text)
+create procedure open_dayterm(in open_date date, in start_hour int, in end_hour int, in term int, in pattern text)
 begin
 	create temporary table vserves as
 		select wp_users.id from wp_usermeta
 		inner join wp_users on wp_usermeta.user_id = wp_users.id
 		where wp_usermeta.meta_key='olbgroup' and wp_usermeta.meta_value='teacher'
 		and wp_users.user_login like pattern collate utf8mb4_general_ci;
-	set @time = maketime(0, 0, 0);
-	set @period = maketime(24, 0, 0);
+	set @time = maketime(start_hour, 0, 0);
+	set @period = maketime(end_hour, 0, 0);
 	while @time < @period do
 		insert ignore into wp_olb_timetable (date, time, room_id) select open_date, @time, id from vserves;
 		set @time = addtime(@time, maketime(term, 0, 0));
@@ -47,17 +49,31 @@ begin
 end;
 //
 
-create procedure close_dayall(in close_date date, in pattern text)
+create procedure open_dayall(in open_date date, in term int, in pattern text)
+begin
+	call open_dayterm(open_date, 0, 24, term, pattern);
+end;
+//
+
+create procedure close_dayterm(in close_date date, in start_hour int, in end_hour int, in pattern text)
 begin
 	create temporary table vserves as
 		select wp_users.id from wp_usermeta
 		inner join wp_users on wp_usermeta.user_id = wp_users.id
 		where wp_usermeta.meta_key='olbgroup' and wp_usermeta.meta_value='teacher'
 		and wp_users.user_login like pattern collate utf8mb4_general_ci;
+	set @start_time = maketime(start_hour, 0, 0);
+	set @end_time = maketime(end_hour, 0, 0);
 	delete tt from wp_olb_timetable as tt
 		inner join vserves on tt.room_id = vserves.id
-		where date = close_date;
+		where date = close_date and time >= @start_time and time < @end_time;
 	drop temporary table vserves;
+end;
+//
+
+create procedure close_dayall(in close_date date, in pattern text)
+begin
+	call close_dayterm(close_date, 0, 24, pattern);
 end;
 //
 
