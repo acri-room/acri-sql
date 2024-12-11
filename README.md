@@ -14,6 +14,8 @@ and replace YOUR_DB_PASSWORD in call_mysql.txt with the password of your Wordpre
   - query_all.sh: list users for specific date of all servers
   - check_unregistered.sh: list servers opened but not reserved
   - check_closed.sh/sql: list servers not opened for reservation
+- Check Users' Verification Keys
+  - query_updated_keys.sh: list verification keys that has been updated recently
 - Misc.
   - list_user.sh: list all of the regular users
   - list_user.rb: count the number of newly registered users
