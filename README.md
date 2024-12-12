@@ -16,6 +16,7 @@ and replace YOUR_DB_PASSWORD in call_mysql.txt with the password of your Wordpre
   - check_closed.sh/sql: list servers not opened for reservation
 - Check Users' Verification Keys
   - query_updated_keys.sh: list verification keys that has been updated recently
+  - update_set_time.sh: update the time when verification keys are set
 - Misc.
   - list_user.sh: list all of the regular users
   - list_user.rb: count the number of newly registered users
