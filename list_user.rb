@@ -2,9 +2,9 @@
 # list_user.rb
 # count the number of newly registered users
 
-WP_LIST_USER_QUERY = "/usr/local/acri/list_user.sh"
-WP_LIST_USER_QUERY_DATA = "/usr/local/acri/wp_user.dat"
-WP_USER_COUNT_FILE = "/usr/local/acri/wp_user_count.csv"
+WP_LIST_USER_QUERY = __dir__ + "/list_user.sh"
+WP_LIST_USER_QUERY_DATA = __dir__ + "/wp_user.dat"
+WP_USER_COUNT_FILE = __dir__ + "/wp_user_count.csv"
 
 system(WP_LIST_USER_QUERY)
 users = []
