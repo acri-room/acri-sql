@@ -4,4 +4,4 @@
 #   argument: date (YYYY-MM-DD format)
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-$( cat ${SCRIPT_DIR}/call_mysql.txt ) -N -s -e "set @date='$1'; $( cat ${SCRIPT_DIR}/check_closed.sql )"
+mysql --defaults-extra-file=${SCRIPT_DIR}/call_mysql.conf wordpress -N -s -e "set @date='$1'; $( cat ${SCRIPT_DIR}/check_closed.sql )"

@@ -4,4 +4,4 @@
 #   arguments: prefix (such as 'vs0'), number of machines
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-$( cat ${SCRIPT_DIR}/call_mysql.txt ) -A -e "set @prefix='$1', @vms=$2; call create_serverseries(@prefix, @vms);"
+mysql --defaults-extra-file=${SCRIPT_DIR}/call_mysql.conf wordpress -A -e "set @prefix='$1', @vms=$2; call create_serverseries(@prefix, @vms);"

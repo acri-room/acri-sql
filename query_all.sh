@@ -4,4 +4,4 @@
 #   argument: date (YYYY-MM-DD format)
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-{ $( cat ${SCRIPT_DIR}/call_mysql.txt ) -N -A -e "select server.user_login, time, user.user_login from wp_olb_history inner join wp_users as server on wp_olb_history.room_id = server.id inner join wp_users as user on wp_olb_history.user_id = user.id where date = '$1'"; ${SCRIPT_DIR}/check_closed.sh $1; } | sort > query_all_result.dat
+mysql --defaults-extra-file=${SCRIPT_DIR}/call_mysql.conf wordpress -N -A -e "select server.user_login, time, user.user_login from wp_olb_history inner join wp_users as server on wp_olb_history.room_id = server.id inner join wp_users as user on wp_olb_history.user_id = user.id where date = '$1'"; ${SCRIPT_DIR}/check_closed.sh $1; } | sort > query_all_result.dat

@@ -5,4 +5,4 @@
 MONTH=$( date -d "$(date +%Y-%m-1) 1 month" +"%Y-%m" )
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 MAINTENANCE=$( grep ${MONTH} ${SCRIPT_DIR}/maintenance_days.txt | head -n 1 )
-$( cat ${SCRIPT_DIR}/call_mysql.txt ) -A -e "call routine_open('${MAINTENANCE}');"
+mysql --defaults-extra-file=${SCRIPT_DIR}/call_mysql.conf wordpress -A -e "call routine_open('${MAINTENANCE}');"
