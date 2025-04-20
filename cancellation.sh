@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # cancellation.sh
 # force cancel a specific time slot
 #   arguments: date, time, server name, user name

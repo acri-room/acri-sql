@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # query_time.sh
 # return the list of reserved servers and users on the specific time slot
 #   argument: date (YYYY-MM-DD), time (HH:NN:SS)

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # registration.sh
 # force reserve a specific time slot
 #   argument: date, time, server name, user name

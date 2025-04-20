@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # update_set_time.sh
 # update the time when verification keys are set in the gateway server
 #   argument: username (beginning with `u_`), time string

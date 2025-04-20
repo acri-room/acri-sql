@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # check_unregistered.sh
 # return the list of servers that are opened for reservation but not reserved yet
 #   arguments: date (YYYY-MM-DD), time (HH:NN:SS)

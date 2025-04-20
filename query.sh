@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # list_user.sh
 # return the name of user who reserves the specific time slot of server
 #   argument: server name, date, time

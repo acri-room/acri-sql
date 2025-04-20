@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # list_user.sh
 # return the list of regular users
 

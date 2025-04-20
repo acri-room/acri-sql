@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # db_routine.sh 2020-07-29? Katsunoshin MATSUI -> 2023-05-26 Naoki FUJIEDA
 # call the monthly routine (see init_procedure.sql for details)
 
